@@ -5,3 +5,6 @@
 -- El Software se encuentra en su primera versión de desarrollo.
 
 - El Hardware esta conformado por dos microcontroladores
+
+![Image text](https://github.com/zzuljs/CppLearning/blob/master/CppLearning/raw/master/Itachi.jpg)
+
