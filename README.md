@@ -6,5 +6,5 @@
 
 - El Hardware esta conformado por dos microcontroladores
 
-![Image text](https://github.com/zzuljs/CppLearning/blob/master/CppLearning/raw/master/Itachi.jpg)
+![Image text](https://github.com/ecuaiot/HogaresInteligentes/blob/master/src/data/www/esp32.png)
 
