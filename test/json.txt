@@ -1,0 +1,21 @@
+Medida de energia
+http://192.168.100.181/
+emon/powermeter/#
+
+//
+    strlcpy(id, "ecuaiot", sizeof(id));
+    bootCount = 0;
+    /* ------------------- CLIENTE -------------------- */
+    wifi_staticIP = false;
+    strlcpy(wifi_ssid, "NETLIFE-SAAM", sizeof(wifi_ssid)); //"TABLERO CCO"
+    strlcpy(wifi_passw, "987654321", sizeof(wifi_passw));  //"PAM2020PAM"
+    strlcpy(wifi_ip_static, "192.168.100.187", sizeof(wifi_ip_static)); //"192.168.0.167"
+    strlcpy(wifi_gateway, "192.168.100.1", sizeof(wifi_gateway));
+
+
+Tags de Pruebas de Mqtt 
+
+cuba_iot/1712CFA4CEF442/#
+
+cuba_iot/1712CFA4CEF442/command
+{ "protocol": "MQTT", "ouput": "RELAY1", "value": false }
