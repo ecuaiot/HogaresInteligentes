@@ -1,11 +1,16 @@
-/*
- * -------------------------------------------------------------------
- * AdminESP - ElectronicIOT 2021
+/* -------------------------------------------------------------------
+ * AdminESP - ElectronicIOT 2022
  * Sitio WEB: https://electroniciot.com
- * Correo: info@electroniciot.com
+ * Correo: admim@electroniciot.com
+ * Cel_WSP: +591 71243395
+ * Plataforma: ESP32
+ * Framework:  Arduino
+ * Proyecto Admin Panel Tool para el ESP32 con HTNL, JavaScript, CSS
+ * Hogares Inteligentes v2.0
  * -------------------------------------------------------------------
- */
+*/
 
+#include <Update.h>
 // -------------------------------------------------------------------
 // CORS
 // -------------------------------------------------------------------
@@ -13,19 +18,12 @@ bool enableCors = true;
 // -------------------------------------------------------------------
 // Función de ayuda para realizar autenticación en una solicitud http
 // -------------------------------------------------------------------
-bool requestPreProcess(AsyncWebServerRequest *request, AsyncResponseStream *&response, const char *contentType = "application/json"){
-  
+bool requestPreProcess(AsyncWebServerRequest *request, AsyncResponseStream *&response, const char *contentType = "application/json"){  
   if(!request->authenticate(www_username, www_password)) {
     request->requestAuthentication();
     return false;
   }
-
   response = request->beginResponseStream(contentType);
-
-  if(enableCors) {
-    response->addHeader("Access-Control-Allow-Origin", "*");
-  }
-
   return true;
 }
 
@@ -96,46 +94,106 @@ void handleHome(AsyncWebServerRequest *request) {
 }
 
 // -------------------------------------------------------------------
+// Método POST carga del los archivos de configuración OK
+// -------------------------------------------------------------------
+// Variables para la carga del Archivo
+File file;
+bool opened = false;
+void handleDoUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+    const char* dataType = "application/json";
+    if (!index) {
+        Serial.printf("Info: Carga iniciada: %s\n", filename.c_str());
+    }
+    if (opened == false) {
+        opened = true;
+        file = SPIFFS.open(String("/") + filename, FILE_WRITE);
+        if (!file) {
+            log("Error: No se pudo abrir el archivo para escribirlo");
+            request->send(500, dataType, "{ \"save\": false, \"msg\": \"¡Error, No se pudo abrir el archivo para escribir!\"}");
+            return;
+        }
+    } 
+    if (file.write(data, len) != len) {
+        log("Error: No se pudo escribir el Archivo");
+        request->send(500, dataType, "{ \"save\": false, \"msg\": \"¡Error, No se pudo escribir el Archivo: " + filename + " !\"}");
+        return;
+    }
+    if (final) {
+        AsyncWebServerResponse *response = request->beginResponse(201, dataType, "{ \"save\": true, \"msg\": \"¡Carga del Archivo: " + filename + " completada!\"}");
+        response->addHeader("Cache-Control","no-cache");
+        response->addHeader("Location", "/");
+        request->send(response);
+        file.close();
+        opened = false;
+        log("Info: Carga del Archivo " + filename + " completada");
+        // Esperar la Transmisión de los datos seriales
+        Serial.flush(); 
+        ESP.restart();
+    }
+}
+
+// -------------------------------------------------------------------
+// Método POST para la carga del nuevo Firmware OK o SPIFFS OK
+// -------------------------------------------------------------------
+void handleDoFirmware(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final) { 
+    const char* dataType = "application/json";
+    // Si el nombre de archivo incluye ( spiffs ), actualiza la partición de spiffs
+    int cmd = (filename.indexOf("spiffs") > -1) ? U_PART : U_FLASH;
+    String updateSystem = cmd == U_PART ? "FileSystem" : "Firmware";
+    if (!index) {
+        content_len = request->contentLength();    
+        log("Info: Actualización del "+ updateSystem +" iniciada");        
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN, cmd)) {
+            AsyncWebServerResponse *response = request->beginResponse(500, dataType, "{ \"save\": false, \"msg\": \"¡Error, No se pudo actualizar el "+ updateSystem +" Index: " + filename + " !\"}");
+            request->send(response);
+            Update.printError(Serial);
+            log("Error: Update del "+ updateSystem +" ternimado");
+        }
+    }
+    if (Update.write(data, len) != len) {
+        Update.printError(Serial);
+    }
+    if (final) {        
+        if (!Update.end(true)) {
+            AsyncWebServerResponse *response = request->beginResponse(500, dataType, "{ \"save\": false, \"msg\": \"¡Error, No se pudo actualizar el "+ updateSystem +" Final: " + filename + " !\"}");
+            request->send(response);
+            Update.printError(Serial);
+        } else {            
+            AsyncWebServerResponse *response = request->beginResponse(201, dataType, "{ \"save\": true, \"type\": \""+updateSystem+"\"}");
+            response->addHeader("Cache-Control","no-cache");
+            response->addHeader("Location", "root@"+ updateSystem +"");
+            request->send(response);
+            log("Info: Update del " + updateSystem + " completado");
+            // Esperar la Transmisión de los datos seriales
+            Serial.flush(); 
+            ESP.restart();
+        }
+    }
+}
+// -------------------------------------------------------------------
 // Cargar Información de las paginas al Servidor peticiones GET/POST
 // -------------------------------------------------------------------
 void InitServer(){
     // -------------------------------------------------------------------
     // Cargar todos los Archivos estáticos del servidor
     // -------------------------------------------------------------------
-    server.serveStatic("/www/bootstrap-switch.css", SPIFFS, "/www/bootstrap-switch.css").setDefaultFile("www/bootstrap-switch.css").setCacheControl("max-age=600");
-    server.serveStatic("/www/bootstrap-switch.min.js", SPIFFS, "/www/bootstrap-switch.min.js").setDefaultFile("www/bootstrap-switch.min.js").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/bootstrap.css", SPIFFS, "/www/bootstrap.css").setDefaultFile("/assets/bootstrap.css").setCacheControl("max-age=600");
-    server.serveStatic("/www/bootstrap.min.js", SPIFFS, "/www/bootstrap.min.js").setDefaultFile("www/bootstrap.min.js").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/esp32.png", SPIFFS, "/www/esp32.png").setDefaultFile("www/esp32.png").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/font-awesome.css", SPIFFS, "/www/font-awesome.css").setDefaultFile("www/font-awesome.css").setCacheControl("max-age=600");
-    server.serveStatic("/www/fontawesome-webfont.eot", SPIFFS, "/www/fontawesome-webfont.eot").setDefaultFile("www/fontawesome-webfont.eot").setCacheControl("max-age=600");
-    server.serveStatic("/www/fontawesome-webfont.woff", SPIFFS, "/www/fontawesome-webfont.woff").setDefaultFile("www/fontawesome-webfont.woff").setCacheControl("max-age=600");
- 
-    server.serveStatic("/www/jquery-2.0.3.min.js", SPIFFS, "/www/jquery-2.0.3.min.js").setDefaultFile("www/jquery-2.0.3.min.js").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/layout2.css", SPIFFS, "/www/layout2.css").setDefaultFile("www/layout2.css").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/logo.png", SPIFFS, "/www/logo.png").setDefaultFile("www/logo.png").setCacheControl("max-age=600");
-    
-    server.serveStatic("/www/main.css", SPIFFS, "/www/main.css").setDefaultFile("www/main.css").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/modernizr-2.6.2.min.js", SPIFFS, "/www/modernizr-2.6.2.min.js").setDefaultFile("www/modernizr-2.6.2.min.js").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/MoneAdmin.css", SPIFFS, "/www/MoneAdmin.css").setDefaultFile("www/MoneAdmin.css").setCacheControl("max-age=600");
-    
-    server.serveStatic("/www/scripts.js", SPIFFS, "/www/scripts.js").setDefaultFile("www/scripts.js").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/styles.css", SPIFFS, "/www/styles.css").setDefaultFile("www/styles.css").setCacheControl("max-age=600");
-
-    server.serveStatic("/www/theme.css", SPIFFS, "/www/theme.css").setDefaultFile("www/theme.css").setCacheControl("max-age=600");
-    
-    server.serveStatic("/www/sweetalert2.min.css", SPIFFS, "/www/sweetalert2.min.css").setDefaultFile("www/sweetalert2.min.css").setCacheControl("max-age=600");
-    server.serveStatic("/www/sweetalert2.min.js", SPIFFS, "/www/sweetalert2.min.js").setDefaultFile("www/sweetalert2.min.js").setCacheControl("max-age=600");
-    server.serveStatic("/www/error.css", SPIFFS, "/www/error.css").setDefaultFile("www/error.css").setCacheControl("max-age=600");
-    
+    // JavaScripts
+    server.serveStatic("/js/libscripts.js", SPIFFS, "/js/libscripts.js").setDefaultFile("js/libscripts.js").setCacheControl("max-age=600");
+    server.serveStatic("/js/mainscripts.js", SPIFFS, "/js/mainscripts.js").setDefaultFile("js/mainscripts.js").setCacheControl("max-age=600");
+    server.serveStatic("/js/scripts.js", SPIFFS, "/js/scripts.js").setDefaultFile("/js/scripts.js").setCacheControl("max-age=600");
+    server.serveStatic("/js/sweetalert.js", SPIFFS, "/js/sweetalert.js").setDefaultFile("js/sweetalert.js").setCacheControl("max-age=600");
+    server.serveStatic("/js/vendorscripts.js", SPIFFS, "/js/vendorscripts.js").setDefaultFile("js/vendorscripts.js").setCacheControl("max-age=600"); 
+    // CSS
+    server.serveStatic("/css/bootstrap.css", SPIFFS, "/css/bootstrap.css").setDefaultFile("css/bootstrap.css").setCacheControl("max-age=600");
+    server.serveStatic("/css/font-aws.css", SPIFFS, "/css/font-aws.css").setDefaultFile("css/font-aws.css").setCacheControl("max-age=600");
+    server.serveStatic("/css/font-aws.woff2", SPIFFS, "/css/font-aws.woff2").setDefaultFile("css/font-aws.woff2").setCacheControl("max-age=600"); 
+    server.serveStatic("/css/mooli.css", SPIFFS, "/css/mooli.css").setDefaultFile("css/mooli.css").setCacheControl("max-age=600");
+    server.serveStatic("/css/styles.css", SPIFFS, "/css/styles.css").setDefaultFile("css/styles.css").setCacheControl("max-age=600");
+    server.serveStatic("/css/sweetalert.css", SPIFFS, "/css/sweetalert.css").setDefaultFile("css/sweetalert.css").setCacheControl("max-age=600");    
+    server.serveStatic("/css/vivify.css", SPIFFS, "/css/vivify.css").setDefaultFile("css/vivify.css").setCacheControl("max-age=600"); 
+    // img
+    server.serveStatic("/img/esp32.png", SPIFFS, "/img/esp32.png").setDefaultFile("img/esp32.png").setCacheControl("max-age=600");
+    //server.serveStatic("/img/user.png", SPIFFS, "/img/user.png").setDefaultFile("img/user.png").setCacheControl("max-age=600");   
     // -------------------------------------------------------------------
     // Cargar página Index.html o Home
     // url: /
@@ -356,9 +414,12 @@ void InitServer(){
                             request->send(200, "text/html", SweetAlert("Usuario", "Error", "Usuario no Actualizado", "error", "aviso"));
                             return;
                         }
-                    }
-                    // Guardar solo la contraseña nueva 
-                    if(np != "" && cp != "" && np == cp && nu == ""){
+                        // Solucionar bug cuando no se envia datos
+                    }else if(nu == "" && np == "" && cp == ""){
+                        request->send(200, "text/html", SweetAlert("Usuario", "Error", "¡Error, No se permite nuevo usuario, nueva contraseña y confirmación de nueva contraseña vacíos!", "error", "aviso"));
+                        return;
+                        // Guardar solo la contraseña nueva 
+                    }else if(np != "" && cp != "" && np == cp && nu == ""){
                         // Validar que el usuario nuevo sea diferente al antiguo
                         if(np == www_password){
                             request->send(200, "text/html", SweetAlert("Contraseña", "Warning", "La contraseña no puede ser igual a la anterior", "warning", "aviso"));
@@ -378,9 +439,8 @@ void InitServer(){
                     }else if(np != cp){
                         request->send(200, "text/html", SweetAlert("Contraseña", "Warning", "La contraseña y confirmación no coinciden", "warning", "aviso"));
                         return;
-                    }
-                    // Guardo Usuario y Contraseña
-                    if(nu != "" && np != "" && cp != "" && np == cp){
+                        // Guardo Usuario y Contraseña
+                    }else if(nu != "" && np != "" && cp != "" && np == cp){
                         // Validar que el usuario nuevo y la contraseña nueva sea diferente al antiguos
                         if(np == www_password && nu == www_username){
                             request->send(200, "text/html", SweetAlert("Usuario & Contraseña", "Warning", "La contraseña y el usuario no puede ser iguales a los anteriores", "warning", "aviso"));
@@ -639,10 +699,10 @@ void InitServer(){
     // No solicite más de 3-5 segundos. \ ALT + 92 
     // -------------------------------------------------------------------
     server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
-    AsyncResponseStream *response;
+    /* AsyncResponseStream *response;
         if(false == requestPreProcess(request, response)) {
             return;
-        }
+        } */
         String json = "";
         int n = WiFi.scanComplete();
         if(n == -2){
@@ -676,10 +736,90 @@ void InitServer(){
                 WiFi.scanNetworks(true, true);
             }
         }
-        response->addHeader("Server","ESP32 Admin Tools");
+        //response->addHeader("Server","ESP32 Admin Tools");
         request->send(200, "application/json", json);
         json = String();
 
+    });
+    // -------------------------------------------------------------------
+    // Manejo de la descarga del Archivo settingwifi.json
+    // url: "/esp-settingwifi"
+    // Método: GET
+    // -------------------------------------------------------------------
+    server.on("/esp-settingwifi", HTTP_GET, [](AsyncWebServerRequest *request){
+       /*  AsyncResponseStream *response;
+        if(false == requestPreProcess(request, response)) {
+            return;
+        } */
+        const char* dataType = "application/json"; 
+        log("Info: Descarga del archivo settingwifi.json");
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/settingwifi.json", dataType, true);
+        request->send(response);
+    });
+    // -------------------------------------------------------------------
+    // Manejo de la descarga del Archivo settingmqtt.json
+    // url: "/esp-settingmqtt"
+    // Método: GET
+    // -------------------------------------------------------------------
+    server.on("/esp-settingmqtt", HTTP_GET, [](AsyncWebServerRequest *request){
+       /*  AsyncResponseStream *response;
+        if(false == requestPreProcess(request, response)) {
+            return;
+        } */
+        const char* dataType = "application/json"; 
+        log("Info: Descarga del archivo settingmqtt.json");
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/settingmqtt.json", dataType, true);
+        request->send(response);
+    });
+    // -------------------------------------------------------------------
+    // Manejo de la descarga del Archivo settingrelays.json
+    // url: "/esp-settingrelays"
+    // Método: GET
+    // -------------------------------------------------------------------
+    server.on("/esp-settingrelays", HTTP_GET, [](AsyncWebServerRequest *request){
+       /*  AsyncResponseStream *response;
+        if(false == requestPreProcess(request, response)) {
+            return;
+        } */
+        const char* dataType = "application/json"; 
+        log("Info: Descarga del archivo settingrelays.json");
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/settingrelays.json", dataType, true);
+        request->send(response);
+    });
+    // -------------------------------------------------------------------
+    // Manejo de la descarga del Archivo settingadmin.json
+    // url: "/esp-settingadmin.json"
+    // Método: GET
+    // -------------------------------------------------------------------
+    server.on("/esp-settingadmin", HTTP_GET, [](AsyncWebServerRequest *request){
+       /*  AsyncResponseStream *response;
+        if(false == requestPreProcess(request, response)) {
+            return;
+        } */
+        const char* dataType = "application/json"; 
+        log("Info: Descarga del archivo settingadmin.json");
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/settingadmin.json", dataType, true);
+        request->send(response);
+    });
+    // -------------------------------------------------------------------
+    // Manejo de la carga del archivo Settings.json
+    // url: "/esp-upload"
+    // Método: POST
+    // -------------------------------------------------------------------
+    server.on("/esp-upload", HTTP_POST, [](AsyncWebServerRequest * request) {
+        opened = false;
+    },
+    [](AsyncWebServerRequest * request, const String & filename, size_t index, uint8_t *data, size_t len, bool final) {
+        handleDoUpload(request, filename, index, data, len, final);
+    });
+    // -------------------------------------------------------------------
+    // Manejo de la Actualización del Firmware a FileSystem
+    // url: /esp-firmware
+    // Método: POST 
+    // -------------------------------------------------------------------
+    server.on("/esp-firmware", HTTP_POST, [](AsyncWebServerRequest * request) {},
+    [](AsyncWebServerRequest * request, const String & filename, size_t index, uint8_t *data, size_t len, bool final) {
+        handleDoFirmware(request, filename, index, data, len, final);
     });
     // -------------------------------------------------------------------
     // Error 404 página no encontrada
@@ -757,7 +897,11 @@ void InitServer(){
     // -------------------------------------------------------------------
     // Iniciar el Servidor WEB
     // -------------------------------------------------------------------
+    if(enableCors) {
+        DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
+    }
     server.begin();
+    Update.onProgress(printProgress);
     log("Info: Servidor HTTP iniciado");
 
 }

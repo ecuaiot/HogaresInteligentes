@@ -1,338 +1,331 @@
-<!DOCTYPE html>
-<html lang="es">
-<!-- BEGIN HEAD-->
+<!doctype html>
+<html lang="es" data-theme="dark">
+<!-- * -------------------------------------------------------------------- -->
+<!-- * AdminESP - ElectronicIOT 2022                                        -->
+<!-- * Sitio WEB: https://electroniciot.com                                 -->
+<!-- * Correo: admin@electroniciot.com                                      -->
+<!-- * Cel_WSP: +591 71243395                                               -->
+<!-- * Plataforma: ESP32                                                    -->
+<!-- * Framework:  Arduino                                                  -->
+<!-- * Proyecto: Panel Administrativo para el ESP32 con HTML 5              -->
+<!-- * Nombre: Hogares Inteligentes                                             -->
+<!-- * Autor: Ing. Yamir Hidalgo Peña                                       -->
+<!-- * -------------------------------------------------------------------  -->
 
 <head>
-    <meta charset="UTF-8" />
-    <title>AdminTools | WIFI</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta content="" name="description" />
-    <meta content="ElectronicIOT" name="author" />
-    <!-- Favicon icon -->
-    <link rel="icon" href="www/esp32.png" type="image/png">
-    <!-- GLOBAL STYLES -->
-    <link rel="stylesheet" href="www/bootstrap.css" />
-    <link rel="stylesheet" href="www/main.css" />
-    <link rel="stylesheet" href="www/theme.css" />
-    <link rel="stylesheet" href="www/MoneAdmin.css" />
-    <link rel="stylesheet" href="www/font-awesome.css" />
-    <link rel="stylesheet" href="www/bootstrap-switch.css" />
-    <link rel="stylesheet" href="www/sweetalert2.min.css" />
-    <link rel="stylesheet" href="www/styles.css" />
-    <!--END GLOBAL STYLES -->
+    <title>WIFI | Hogares Inteligentes</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="description" content="Panel Administrativo para el ESP32">
+    <meta name="author" content="ELECTRONICIOT.COM">
+    <link rel="icon" href="img/esp32.png" type="image/png">
+    <!-- VENDOR CSS -->
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-aws.css">
+    <link rel="stylesheet" href="css/vivify.css">
+    <link rel="stylesheet" href="css/sweetalert.css" />
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="css/mooli.css">
+    <!-- CUSTOM CSS -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<!-- END  HEAD-->
-<!-- BEGIN BODY-->
 
-<body class="padTop53 " onLoad="wifi();">
-    <!-- MAIN WRAPPER -->
-    <div id="wrap">
-        <!-- HEADER SECTION -->
-        <div id="top">
-            <nav class="navbar navbar-inverse navbar-fixed-top " style="padding-top: 10px;">
-                <a data-original-title="Show/Hide Menu" data-placement="bottom" data-tooltip="tooltip" class="accordion-toggle btn btn-primary btn-sm visible-xs" data-toggle="collapse" href="#menu" id="menu-toggle">
-                    <i class="icon-align-justify"></i>
-                </a>
-                <!-- LOGO SECTION -->
-                <header class="navbar-header">
-                    <a href="/" class="navbar-brand">
-                        <img src="www/logo.png" alt="" /></a>
-                </header>
-                <!-- END LOGO SECTION -->
-                <ul class="nav navbar-top-links navbar-right">
-                    <!--ADMIN SETTINGS SECTIONS -->
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="icon-user "></i>&nbsp; <i class="icon-chevron-down "></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user">
-                            <li>
-                                <a href="esp-admin"><i class="icon-user"></i> Usuario </a>
-                            </li>
-                            <li class="divider"></li>
-                            <li><a href="esp-logout"><i class="icon-signout"></i> Salir </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!--END ADMIN SETTINGS -->
-                </ul>
+<body data-theme="light" onLoad="wifi();">
+    <div id="body" class="theme-green">
+        <!-- Overlay For Sidebars -->
+        <div class="overlay"></div>
+        <div id="wrapper">
+            <!-- Page top navbar -->
+            <nav class="navbar navbar-fixed-top">
+                <div class="container-fluid">
+                    <h5>Hogares Inteligentes</h5>
+                    <div class="navbar-left">
+                        <div class="navbar-btn">
+                            <a href="/"><img src="img/esp32.png" alt="Mooli Logo" class="img-fluid logo"></a>
+                            <button type="button" class="btn-toggle-offcanvas"><i class="fa fa-align-left"></i></button>
+                        </div>
+                    </div>
+                    <div class="navbar-right">
+                        <div id="navbar-menu">
+                            <ul class="nav navbar-nav">
+                                <!-- Claro / Oscuro -->
+                                <li class="mt-2">
+                                    <label class="switch dark_mode">
+                                        <input type="checkbox">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </li>
+                                <li class="hidden-xs"><a href="javascript:void(0);" id="btnFullscreen" class="icon-menu"><i class="fa fa-arrows-alt"></i></a></li>
+                                <li><a href="esp-logout" class="icon-menu"><i class="fa fa-power-off"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </nav>
-        </div>
-        <!-- END HEADER SECTION -->
-        <!-- MENU SECTION -->
-        <div id="left">
-            <div class="media user-media well-small">
-                <a class="user-link" href="/">
-                    <img class="media-object img-thumbnail user-img" alt="User Picture" src="www/esp32.png" />
-                </a>
-                <br />
-                <div class="media-body">
-                    <h5 class="media-heading"> #platform#</h5>
-                    <ul class="list-unstyled user-info">
-                        <li>
-                            <a class="btn btn-success btn-xs btn-circle" style="width: 10px;height: 12px;"></a> Online
-                        </li>
-                    </ul>
+            <!-- Main left sidebar menu -->
+            <div id="left-sidebar" class="sidebar">
+                <a href="#" class="menu_toggle"><i class="fa fa-angle-left"></i></a>
+                <!-- Logo -->
+                <div class="navbar-brand">
+                    <a href="/"><img src="img/esp32.png" alt="Hogares Inteligentes Logo" class="img-fluid logo"><span>#platform#</span></a>
+                    <button type="button" class="btn-toggle-offcanvas btn btn-sm float-right"><i class="lnr lnr-menu fa fa-chevron-circle-left"></i></button>
                 </div>
-                <br />
-            </div>
-            <ul id="menu" class="collapse">
-                <li class="panel">
-                    <a href="/">
-                        <i class="icon-th-large"></i> Dashboard
-                    </a>
-                </li>
-                <li class="panel active">
-                    <a href="esp-wifi">
-                        <i class="icon-signal"></i> WIFI
-                    </a>
-                </li>
-                <li class="panel">
-                    <a href="esp-mqtt">
-                        <i class="icon-sitemap"></i> MQTT
-                    </a>
-                </li>
-                <li class="panel ">
-                    <a href="#" data-parent="#menu" data-toggle="collapse" class="accordion-toggle" data-target="#component-nav">
-                        <i class=" icon-cog"> </i> Administrar
-                        <span class="pull-right">
-                          <i class="icon-angle-left"></i>       
-                    </a>
-                    <ul class="collapse" id="component-nav">
-                        <li class=""><a href="esp-device"><i class="icon-angle-right"></i> Dispositivo </a></li>
-                        <li class=""><a href="esp-restore"><i class="icon-angle-right"></i> Ajustes predeterminados de fábrica </a></li>
-                        <li class=""><a href="esp-restart"><i class="icon-angle-right"></i> Reinicio </a></li>
-                        <li class=""><a href="esp-admin"><i class="icon-angle-right"></i> Contraseña </a></li>
-                    </ul>
-                </li>
-                <li class="panel">
-                    <a href="esp-logout">
-                        <i class="icon-signout"></i> Salir
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <!--END MENU SECTION -->
-        <!--PAGE CONTENT -->
-        <div id="content">
-            <div class="inner" style="min-height:1200px;">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h2 id="page">Configuración de la Red Inalámbrica</h2>
+                <!-- sidebar -->
+                <div class="sidebar-scroll">
+                    <!-- user -->
+                    <div class="user-account">
+                        <!-- <div class="user_div"> -->
+                        <!--     <img src="img/user.png" class="user-photo" alt="User Profile Picture"> -->
+                        <!-- </div> -->
+                        <div class="dropdown">
+                            <span>Administrador,</span>
+                            <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>Usuario</strong></a>
+                            <ul class="dropdown-menu dropdown-menu-right account vivify flipInY">
+                                <li><a href="esp-admin"><i class="fa fa-user"></i>Perfil</a></li>
+                                <li class="divider"></li>
+                                <li><a href="esp-logout"><i class="fa fa-power-off"></i>Salir</a></li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            <hr> 
-            <!--END BLOCK SECTION -->
-            <div class="col-lg-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <i class="icon-signal"></i> Configuración de Red WiFi en Modo Cliente y Access Point
-                    </div>
-                    <div class="panel-body">
-                        <br>                        
-                        <form class="form-horizontal" name="esp-wifi" action="esp-wifi" method="POST" id="form">
-                            <input type="hidden" id="wifi_staticIPen" name="wifi_staticIPen" value="#wifi_staticIPen#" class="form-control" />
-                            <input type="hidden" id="ap_AP_en" name="ap_AP_en" value="#ap_AP_en#" class="form-control" />
-                            <input type="hidden" id="ap_visibility" name="ap_visibility" value="#ap_visibility#" class="form-control" />
-                            <div class="form-group">
-                                <label for="#" class="control-label col-lg-3"></label>
-                                <div class="col-lg-5">
-                                    <button class="btn" data-toggle="modal" data-target="#myModal"><i class="icon-search"></i> Buscar</button>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_wifi_ssid">
-                                <label for="wifi_ssid" class="control-label col-lg-3">Nombre de la Red Inalámbrica:</label>
-                                <div class="col-lg-5">
-                                    <input type="text" id="wifi_ssid" name="wifi_ssid" value="#wifi_ssid#" data-expresion="TextNumberWIFI" placeholder="Nombre (SSID)" class="form-control" />
-                                    <label for="wifi_ssid" class="help-block formulario_input-error">La Red Inalámbrica tiene que contener un mínimo de 4 dígitos y 30 como máximo, solo puede contener números, letras, punto, numeral, espacio y comillas.</label>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_wifi_passw">
-                                <label for="wifi_passw" class="control-label col-lg-3">Contraseña Inalámbrica:</label>
-                                <div class="col-lg-5">
-                                    <input type="password" id="wifi_passw" name="wifi_passw" type="password" data-expresion="TextNumberPassw" placeholder="*********" class="form-control" /> 
-                                    <label for="mqtt_passw" class="help-block formulario_input-error">La Contraseña WIFI tiene que contener un mínimo de 4 dígitos y 30 como máximo, solo puede incluir números, letras y los siguientes caracteres especiales (-)(_)(*).</label>                                   
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="wifi_staticIP" class="control-label col-lg-3">IP Estático:</label>
-                                <div class="col-lg-5">
-                                    <div class="make-switch switch-mini" data-on="primary" data-off="danger">
-                                        <input type="checkbox" id="wifi_staticIP" #wifi_staticIP# onchange="staticIPen();"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_wifi_ip_static">
-                                <label for="wifi_ip_static" class="control-label col-lg-3">Dirección IP:</label>
-                                <div class="col-lg-5">
-                                    <input type="text" id="wifi_ip_static" name="wifi_ip_static" placeholder="Dirección IP" value="#wifi_ip_static#" data-expresion="IPv4" class="form-control ip" /> 
-                                    <label for="local_ip" class="help-block formulario_input-error">No es una IPv4 válida.</label>                 
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_wifi_subnet">
-                                <label for="wifi_subnet" class="control-label col-lg-3">Máscara de Subred:</label>
-                                <div class="col-lg-5">
-                                    <input type="text" id="wifi_subnet" name="wifi_subnet" placeholder="Mascara de Subred" value="#wifi_subnet#" data-expresion="IPv4" class="form-control ip" />
-                                    <label for="local_ip" class="help-block formulario_input-error">No es una IPv4 válida.</label>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_wifi_gateway">
-                                <label for="wifi_gateway" class="control-label col-lg-3">Puerta de Enlace:</label>
-                                <div class="col-lg-5">
-                                    <input type="text" id="wifi_gateway" name="wifi_gateway" placeholder="Puerta de Enlace" value="#wifi_gateway#" data-expresion="IPv4" class="form-control ip" />
-                                    <label for="local_ip" class="help-block formulario_input-error">No es una IPv4 válida.</label>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_wifi_primaryDNS">
-                                <label for="wifi_primaryDNS" class="control-label col-lg-3">DNS Primario:</label>
-                                <div class="col-lg-5">
-                                    <input type="text" id="wifi_primaryDNS" name="wifi_primaryDNS" placeholder="DNS Primario" value="#wifi_primaryDNS#" data-expresion="IPv4" class="form-control ip" />
-                                    <label for="local_ip" class="help-block formulario_input-error">No es una IPv4 válida.</label>    
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_wifi_secondaryDNS">
-                                <label for="wifi_secondaryDNS" class="control-label col-lg-3">DNS Secundario:</label>
-                                <div class="col-lg-5">
-                                    <input type="text" id="wifi_secondaryDNS" name="wifi_secondaryDNS" placeholder="DNS Secundario" value="#wifi_secondaryDNS#" data-expresion="IPv4" class="form-control ip" />  
-                                    <label for="local_ip" class="help-block formulario_input-error">No es una IPv4 válida.</label>                                 
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="ap_accessPoint" class="control-label col-lg-3">Modo AP:</label>
-                                <div class="col-lg-5">
-                                    <div class="make-switch switch-mini" data-on="primary" data-off="danger">
-                                        <input type="checkbox" id="ap_accessPoint" #ap_accessPoint# onchange="apenable();"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_ap_nameap">
-                                <label for="ap_nameap" class="control-label col-lg-3">Nombre del AP:</label>
-                                <div class="col-lg-5">
-                                    <input type="text" id="ap_nameap" value="#ap_nameap#" name="ap_nameap" data-expresion="TextNumberAP" placeholder="Nombre (SSID) AP" class="form-control ap" />
-                                    <label for="ssid" class="help-block formulario_input-error">El AP tiene que contener un mínimo de 4 dígitos y 31 como máximo, solo puede contener números, letras, punto, numeral, espacio y comillas.</label>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_ap_passwordap">
-                                <label for="ap_passwordap" class="control-label col-lg-3">Contraseña del AP:</label>
-                                <div class="col-lg-5">
-                                    <input type="password" id="ap_passwordap" name="ap_passwordap" data-expresion="TextNumberPasswAP" placeholder="*********" class="form-control ap" />
-                                    <label for="mqtt_passw" class="help-block formulario_input-error">La Contraseña AP tiene que contener un mínimo de 4 dígitos y 63 como máximo, solo puede incluir números, letras y los siguientes caracteres especiales (-)(_)(*).</label> 
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_ap_canalap">
-                                <label for="ap_canalap" class="control-label col-lg-3">Canal AP:</label>
-                                <div class="col-lg-5">
-                                    <input type="number" id="ap_canalap" name="ap_canalap" value="#ap_canalap#" placeholder="Canal: 1 - 13" class="form-control ap" />
-                                    <label for="canalap" class="help-block formulario_input-error">No es un rango válido.</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="ap_hiddenap" class="control-label col-lg-3">Visibilidad:</label>
-                                <div class="col-lg-5">
-                                    <div class="make-switch switch-mini" data-on="primary" data-off="danger">
-                                        <input type="checkbox" id="ap_hiddenap" #ap_hiddenap# onchange="visibilityen();"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group" id="form_ap_connetap">
-                                <label for="ap_connetap" class="control-label col-lg-3">Número de Conexiones:</label>
-                                <div class="col-lg-5">
-                                    <input type="number" id="ap_connetap" value="#ap_connetap#" name="ap_connetap" placeholder="Min: 0 - Máx: 8" class="form-control ap" />
-                                    <label for="canalap" class="help-block formulario_input-error">No es un rango válido.</label>
-                                </div>
-                            </div>
-                            <div class="form-group formulario_mensaje" id="formulario_mensaje">
-                                <div class="col-lg-12">
-                                    <div class="alert alert-danger">
-                                        <p class="alert-link"><i class="icon-remove-sign"></i> <b>Error:</b> ¡Por favor rellena el formulario correctamente!. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="#" class="control-label col-lg-3"></label>
-                                <div class="col-lg-5">
-                                    <button class="btn btn-primary" type="submit"><i class="icon-save icon-white"></i> Guardar</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <!-- user end -->
+                    <!-- menu -->
+                    <nav id="left-sidebar-nav" class="sidebar-nav">
+                        <ul id="main-menu" class="metismenu animation-li-delay">
+                            <li class="header">Inicio</li>
+                            <li><a href="/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+                            <li class="header">Conectividad</li>
+                            <li class="active"><a href="esp-wifi"><i class="fa fa-wifi"></i> <span>WiFi</span></a></li>
+                            <li><a href="esp-mqtt"><i class="fa fa-tasks"></i> <span>MQTT</span></a></li>
+                            <li class="header">Configuraciones</li>
+                            <li>
+                                <a href="#uiElements" class="has-arrow"><i class="fa fa-cog"></i><span>Administrar</span></a>
+                                <ul>
+                                    <li><a href="esp-device">Dispositivo</a></li>
+                                    <li><a href="esp-admin">Contraseña</a></li>
+                                    <li><a href="esp-restore">Restablecer</a></li>
+                                    <li><a href="esp-restart">Reiniciar</a></li>
+                                </ul>
+                            </li>
+                            <li class="header">sesión</li>
+                            <li><a href="esp-logout"><i class="fa fa-power-off"></i> <span>Salir</span></a></li>
+                        </ul>
+                    </nav>
+                    <!-- menu end -->
                 </div>
             </div>
+            <!-- Main body part  -->
+            <div id="main-content">
+                <div class="container-fluid">
+                    <!-- Page header section  -->
+                    <div class="block-header">
+                        <div class="row clearfix">
+                            <div class="col-xl-5 col-md-5 col-sm-12">
+                                <h1 id="page">Configuración de la Red Inalámbrica</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Conectividad - Scan -->
+                    <div class="row clearfix">
+                        <!-- Conectividad -->
+                        <div class="col-lg-5 col-md-12">
+                            <div class="card p-3 px-4">
+                                <div class="card">
+                                    <div class="header">
+                                        <h2><span class="badge badge-success">Conectividad</span></h2>
+                                    </div>
+                                    <div class="body mt-3">
+                                        <form name="esp-wifi" action="esp-wifi" method="POST" id="form">
+
+                                            <input type="hidden" id="wifi_staticIPen" name="wifi_staticIPen" value="#wifi_staticIPen#" class="form-control" />
+                                            <input type="hidden" id="ap_AP_en" name="ap_AP_en" value="#ap_AP_en#" class="form-control" />
+                                            <input type="hidden" id="ap_visibility" name="ap_visibility" value="#ap_visibility#" class="form-control" />
+
+
+                                            <label for="wifi_ssid" class="text-secondary">Nombre de la Red Inalámbrica:</label><br>
+                                            <label for="wifi_ssid" class="formulario_input-error" id="form_wifi_ssid">La Red Inalámbrica tiene que contener un mínimo de 4 dígitos y 30 como máximo, solo puede contener números, letras, punto, numeral, espacio y comillas.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" id="wifi_ssid" name="wifi_ssid" placeholder="Nombre (SSID)" value="#wifi_ssid#" aria-describedby="basic-addon1" data-expresion="TextNumberWIFI">
+                                            </div>
+
+
+                                            <label for="wifi_passw" class="text-secondary">Contraseña Inalámbrica:</label><br>
+                                            <label for="wifi_passw" class="formulario_input-error" id="form_wifi_passw">La Contraseña WIFI tiene que contener un mínimo de 4 dígitos y 30 como máximo, solo puede incluir números, letras y los siguientes caracteres especiales (-)(_)(*).</label>
+                                            <div class="input-group mb-3">
+                                                <input type="password" class="form-control" id="wifi_passw" name="wifi_passw" placeholder="**********" aria-describedby="basic-addon1" data-expresion="TextNumberPassw">
+                                            </div>
+
+                                            <label for="wifi_staticIP" class="text-secondary">IP Estático (DHCP):</label>
+                                            <div class="input-group mb-3">
+                                                <label class="switch gradient_mode">
+                                                    <input type="checkbox" id="wifi_staticIP" #wifi_staticIP# onchange="switchChange(this, 'ip', 'wifi_staticIPen');">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+
+                                            <label for="wifi_ip_static" class="text-secondary">Dirección IPv4:</label><br>
+                                            <label for="wifi_ip_static" class="formulario_input-error" id="form_wifi_ip_static">No es una IPv4 válida.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control ip" id="wifi_ip_static" name="wifi_ip_static" placeholder="Dirección IPv4" value="#wifi_ip_static#" aria-describedby="basic-addon1" data-expresion="IPv4">
+                                            </div>
+
+                                            <label for="wifi_subnet" class="text-secondary">Máscara de Subred:</label><br>
+                                            <label for="wifi_subnet" class="formulario_input-error" id="form_wifi_subnet">No es una IPv4 válida.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control ip" id="wifi_subnet" name="wifi_subnet" placeholder="Mascara de Subred" value="#wifi_subnet#" aria-describedby="basic-addon1" data-expresion="IPv4">
+                                            </div>
+
+                                            <label for="wifi_gateway" class="text-secondary">Puerta de Enlace:</label><br>
+                                            <label for="wifi_gateway" class="formulario_input-error" id="form_wifi_gateway">No es una IPv4 válida.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control ip" id="wifi_gateway" name="wifi_gateway" placeholder="Puerta de Enlace" value="#wifi_gateway#" aria-describedby="basic-addon1" data-expresion="IPv4">
+                                            </div>
+
+                                            <label for="wifi_primaryDNS" class="text-secondary">DNS Primario:</label><br>
+                                            <label for="wifi_primaryDNS" class="formulario_input-error" id="form_wifi_primaryDNS">No es una IPv4 válida.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control ip" id="wifi_primaryDNS" name="wifi_primaryDNS" placeholder="DNS Primario" value="#wifi_primaryDNS#" aria-describedby="basic-addon1" data-expresion="IPv4">
+                                            </div>
+
+                                            <label for="wifi_secondaryDNS" class="text-secondary">DNS Secundario:</label><br>
+                                            <label for="wifi_secondaryDNS" class="formulario_input-error" id="form_wifi_secondaryDNS">No es una IPv4 válida.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control ip" id="wifi_secondaryDNS" name="wifi_secondaryDNS" placeholder="DNS Secundario" value="#wifi_secondaryDNS#" aria-describedby="basic-addon1" data-expresion="IPv4">
+                                            </div>
+
+                                            <label for="ap_accessPoint" class="text-secondary">Modo AP:</label>
+                                            <div class="input-group mb-3">
+                                                <label class="switch gradient_mode">
+                                                    <input type="checkbox" id="ap_accessPoint" #ap_accessPoint# onchange="switchChange(this, 'ap', 'ap_AP_en');">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+
+                                            <label for="ap_nameap" class="text-secondary">Nombre del AP:</label><br>
+                                            <label for="ap_nameap" class="formulario_input-error" id="form_ap_nameap">El AP tiene que contener un mínimo de 4 dígitos y 31 como máximo, solo puede contener números, letras, punto, numeral, espacio y comillas.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control ap" id="ap_nameap" name="ap_nameap" placeholder="Nombre (SSID) AP" value="#ap_nameap#" aria-describedby="basic-addon1" data-expresion="TextNumberAP">
+                                            </div>
+
+                                            <label for="ap_passwordap" class="text-secondary">Contraseña del AP:</label><br>
+                                            <label for="ap_passwordap" class="formulario_input-error" id="form_ap_passwordap">La Contraseña AP tiene que contener un mínimo de 4 dígitos y 63 como máximo, solo puede incluir números, letras y los siguientes caracteres especiales (-)(_)(*).</label>
+                                            <div class="input-group mb-3">
+                                                <input type="password" class="form-control ap" id="ap_passwordap" name="ap_passwordap" placeholder="*********" aria-describedby="basic-addon1" data-expresion="TextNumberPasswAP">
+                                            </div>
+
+                                            <label for="ap_canalap" class="text-secondary">Canal AP:</label><br>
+                                            <label for="ap_canalap" class="formulario_input-error" id="form_ap_canalap">No es un rango válido.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="number" class="form-control ap" id="ap_canalap" name="ap_canalap" placeholder="Canal: 1 - 13" value="#ap_canalap#" aria-describedby="basic-addon1">
+                                            </div>
+
+                                            <label for="ap_hiddenap" class="text-secondary">Visibilidad:</label>
+                                            <div class="input-group mb-3">
+                                                <label class="switch gradient_mode">
+                                                    <input class="ap" type="checkbox" id="ap_hiddenap" #ap_hiddenap# onchange="switchChange(this, '', 'ap_visibility');">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+
+                                            <label for="ap_connetap" class="text-secondary">Número de Conexiones:</label><br>
+                                            <label for="ap_connetap" class="formulario_input-error" id="form_ap_connetap">No es un rango válido.</label>
+                                            <div class="input-group mb-3">
+                                                <input type="number" class="form-control ap" id="ap_connetap" name="ap_connetap" placeholder="Min: 0 - Máx: 8" value="#ap_connetap#" aria-describedby="basic-addon1">
+                                            </div>
+                                            <!-- Mensaje de Error de Formulario -->
+                                            <div class="input-group mb-3 formulario_mensaje" id="formulario_mensaje">
+                                                <div class="alert alert-danger alert-dismissible col-lg-12" role="alert">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                    <i class="fa fa-times-circle"></i> <b>Error:</b> ¡Por favor rellena el formulario correctamente!.
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <button type="submit" class="btn btn-success mb-2"><i class="fa fa-floppy-o"></i> <span> Guardar</span></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Conectividad end -->
+                        <!-- Scan -->
+                        <div class="col-lg-7 col-md-12">
+                            <div class="card p-3 px-4">
+                                <div class="card">
+                                    <div class="header">
+                                        <h2><span class="badge badge-warning">Escanear Redes WiFi Cercanas</span></h2>
+                                    </div>
+                                    <div class="body mt-3">
+                                        <div class="text-danger">
+                                            <h4 class="card-title text-uppercase" id="redes">0 Redes</h4>
+                                        </div>
+                                        <div class="mt-3 table-off" id="table-div">
+                                            <div class="table-responsive">
+                                                <table class="table" id="tableId">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>SSID</th>
+                                                            <th>Señal (dBm)</th>
+                                                            <th>BSSID/Secure</th>
+                                                            <th>Canal</th>
+                                                            <th>Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="mi_tabla">
+                                                        <!-- 
+                                                            Aquí se pinta la tabla
+                                                         -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="text-center mt-3 text-lg fs-4">
+                                                <button type="button" class="btn btn-success btn-round me-1 mb-3" onclick="escanear()">
+                                                    <i class="fa fa-fw fa-search me-1"></i> Volver a Escanear
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- Escanear -->
+                                        <div class="table-activo" id="scan-div">
+                                            <div class="text-center mt-5 text-lg fs-4">
+                                                <div>
+                                                    <i class="fa fa-wifi text-success" style="font-size: 100px"></i>
+                                                    <div class="text-center py-5">
+                                                        <h4 class="fw-bold text-success text-uppercase mb-0" id="scan_label">NINGUNA RED WIFI ENCONTRADA</h4>
+                                                    </div>
+                                                    <div class="scan-activo" id="btn_scan_action">
+                                                        <button type="button" class="btn btn-success btn-round me-1 mb-3" onclick="escanear()">
+                                                            <i class="fa fa-fw fa-search me-1"></i> Escanear
+                                                        </button>
+                                                    </div>
+                                                    <div class="scan" id="btn_scan_refresh">
+                                                        <button type="button" class="btn btn-primary btn-round me-1 mb-3" disabled>
+                                                            <i class="fa fa-spinner fa-spin"></i> <span>Escaneando...</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Escanear end -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Scan end -->
+                    </div>
+                </div>
+            </div>
+            <!-- Main body end  -->
         </div>
     </div>
-    <!--END PAGE CONTENT -->
-    </div>
-    <!-- END RIGHT STRIP  SECTION -->
-    </div>
-    <!--END MAIN WRAPPER -->
-    <!-- FOOTER -->
-    <div id="footer">
-        <p>&copy; ElectronicIOT &nbsp;2021 &nbsp;v2.1.0</p>
-    </div>
-    <!--END FOOTER -->
-    <!-- GLOBAL SCRIPTS -->
-    <script src="www/jquery-2.0.3.min.js"></script>
-    <script src="www/bootstrap.min.js"></script>
-    <script src="www/modernizr-2.6.2.min.js"></script>
-    <script src="www/bootstrap-switch.min.js"></script>
-    <script src="www/sweetalert2.min.js"></script>
-    <script src="www/scripts.js"></script>
-    <!-- END GLOBAL SCRIPTS -->
+    <!-- Javascript -->
+    <script src="js/libscripts.js"></script>
+    <script src="js/vendorscripts.js"></script>
+    <!-- Vedor js file and create bundle with grunt  -->
+    <script src="js/sweetalert.js"></script>
+    <!-- Project core js file minify with grunt -->
+    <script src="js/mainscripts.js "></script>
+    <!-- Custom Scripts -->
+    <script src="js/scripts.js "></script>
 </body>
-<!-- END BODY-->
 
 </html>
-
-<!-- VENTANA MODAL ESCANEO -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel"> Lista de Redes - Nodo: <span id="serial"><i class="icon-barcode"></i> </span></h4>
-        </div>
-        <div class="modal-body">
-            <code>Redes Encontradas: </code><span class="label label-success" id="redes">--</span>
-            <div class="table-responsive">
-                <table class="table" id="tableId">
-                    <thead>
-                        <tr>
-                            <th align="center">#</th>
-                            <th align="center">SSID</th>
-                            <th align="center">Señal (dBm)</th>
-                            <th align="center">BSSID/<br>Secure</th>
-                            <th align="center">Canal</th>
-                            <th align="center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mi_tabla">
-                        <!--                            
-                            <tr class="success">
-                                <td>cddxc</td>
-                                <td>xcxc</td>
-                                <td>xcxc</td>
-                                <td>xcxc</td>
-                                <td>xcxc</td>
-                                <td><button class="btn btn-primary" onclick="addRowHandlers();"><i class="icon-magnet"></i> Add</button></td>
-                            </tr>
-                            <tr class="success">
-                                <td>cddxc</td>
-                                <td>12345678</td>
-                                <td>xcxc</td>
-                                <td>xcxc</td>
-                                <td>xcxc</td>
-                                <td><button class="btn btn-primary" onclick="addRowHandlers();"><i class="icon-magnet"></i> Add</button></td>
-                            </tr>
-                        -->
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-primary" onclick="escanear();">Buscar</button>
-        </div>
-    </div>
-    </div>
-    </div>

@@ -1,9 +1,12 @@
 /* -------------------------------------------------------------------
- * AdminESP - ElectronicIOT 2021
+ * AdminESP - ElectronicIOT 2022
  * Sitio WEB: https://electroniciot.com
  * Correo: admim@electroniciot.com
- * Plataforma ESP32
- * Proyecto Admin Panel Tool para el ESP32
+ * Cel_WSP: +591 71243395
+ * Plataforma: ESP32
+ * Framework:  Arduino
+ * Proyecto Admin Panel Tool para el ESP32 con HTNL, JavaScript, CSS
+ * Hogares Inteligentes v2.0
  * -------------------------------------------------------------------
 */
 
@@ -83,4 +86,8 @@ bool Relay01_status, Relay02_status; // Estados de los Relay de Salida
 // -------------------------------------------------------------------
 char www_username[15];              // Usuario para acceso al servidor Web
 char www_password[15];              // Contraseña del usuario servidor Web
-
+// -------------------------------------------------------------------
+// Zona Firmware Update
+// ------------------------------------------------------------------- 
+size_t content_len;
+#define U_PART U_SPIFFS

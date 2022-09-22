@@ -1,9 +1,12 @@
 /* -------------------------------------------------------------------
- * AdminESP - ElectronicIOT 2021
+ * AdminESP - ElectronicIOT 2022
  * Sitio WEB: https://electroniciot.com
  * Correo: admim@electroniciot.com
- * Plataforma ESP32
- * Proyecto Admin Panel Tool para el ESP32
+ * Cel_WSP: +591 71243395
+ * Plataforma: ESP32
+ * Framework:  Arduino
+ * Proyecto Admin Panel Tool para el ESP32 con HTNL, JavaScript, CSS
+ * Hogares Inteligentes v2.0
  * -------------------------------------------------------------------
 */
 
@@ -27,6 +30,7 @@
 #include "esp32_mqtt.hpp"
 #include "esp32_websocket.hpp"
 #include "esp32_server.hpp"
+#include "esp32_pinRestore.hpp"
 
 // -------------------------------------------------------------------
 // Setup
@@ -41,7 +45,7 @@ void setup() {
     // Configurar los Pines
     settingPines();
     // Inicio del SPIFFS                 
-    if (!SPIFFS.begin()){
+    if (!SPIFFS.begin(true)){
         log(F("Error: Falló la inicialización del SPIFFS"));
         while (true);
     }
@@ -83,6 +87,7 @@ void setup() {
     InitServer();
     // Nos devuelve la lista de carpetas y archivos del SPIFFS ONLYDEBUG
     // listDir(SPIFFS, "/", 0); 
+    setupPinRestore();
     log("Info: Setup completado");   
 
 }
@@ -121,8 +126,10 @@ void loop() {
     // -------------------------------------------------------------------
     if (millis() - lastWsSend > 1000){
         lastWsSend = millis();
-        WsMessage(GetJson(), "");
+        WsMessage(GetJson(), "", "");
     }
-
-
+    // -------------------------------------------------------------------
+    // Monitorear la Interrupción del Pin 33
+    // -------------------------------------------------------------------
+    restoreIntLoop();
 }

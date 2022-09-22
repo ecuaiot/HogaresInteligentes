@@ -1,10 +1,14 @@
-/*
- * -------------------------------------------------------------------
- * AdminESP - ElectronicIOT 2021
+/* -------------------------------------------------------------------
+ * AdminESP - ElectronicIOT 2022
  * Sitio WEB: https://electroniciot.com
- * Correo: info@electroniciot.com
+ * Correo: admim@electroniciot.com
+ * Cel_WSP: +591 71243395
+ * Plataforma: ESP32
+ * Framework:  Arduino
+ * Proyecto Admin Panel Tool para el ESP32 con HTNL, JavaScript, CSS
+ * Hogares Inteligentes v2.0
  * -------------------------------------------------------------------
- */
+*/
 
 #include "ESPAsyncWebServer.h"
 
@@ -18,7 +22,7 @@ AsyncEventSource events("/events");
 // Declaracion de funciones
 // -------------------------------------------------------------------
 void ProcessRequest(AsyncWebSocketClient * client, String request);
-void WsMessage(String icon, String texto );
+
 // -------------------------------------------------------------------
 // Variables generales WS
 // -------------------------------------------------------------------
@@ -90,57 +94,53 @@ void InitWebSockets(){
 	server.addHandler(&ws);
     log(F("Info: WebSocket server iniciado"));
 }
-
-
 // -------------------------------------------------------------------
 // Manejador de ordenes enviada por Websocket
 // -------------------------------------------------------------------
 void ProcessRequest(AsyncWebSocketClient * client, String request){
-    
-	String command = request;
-    
-	if(command == "restore"){
+   	String command = request;
+	command.trim();    
+	if(strcmp(command.c_str(), "restore") == 0){
 		log("Info: Commando por WS => " + command);
 		settingsResetWiFi();
 		settingsResetMQTT();
 		settingsResetAdmin();
 		settingsResetRelays();
 		if(settingsSaveWiFi() && settingsSaveMQTT() && settingsSaveAdmin() && settingsSaveRelays()){
-			WsMessage("success", " ¡Equipo restaurado correctamente!" );
-		}else{
-			WsMessage("error", " ¡El equipo no se restauro!" );
-		}
-		delay(5000);
-		ESP.restart();
-	}else if (command == "restart"){
+			WsMessage("¡Equipo restablecido correctamente!","success","info");
+			log("Info: ¡Equipo restablecido correctamente!");
+			//vTaskDelay(1000);
+			Serial.flush();
+			ESP.restart();
+		}		
+	}else if (strcmp(command.c_str(), "restart") == 0){
 		log("Info: Commando por WS => " + command);
-		WsMessage("success", " ¡Equipo reiniciado correctamente!" );
-		delay(5000);		
+		WsMessage("¡Equipo reiniciado correctamente!","success","info");
+		log("Info: ¡Equipo reiniciado correctamente!");
+		//vTaskDelay(1000);
+		Serial.flush(); 		
 		ESP.restart(); 
-	}
-	
+	}	
     // TODO: Agregar cuando sea restart
 	if(command != "restore" && command != "restart"){
 		OnOffRelays(command);
-	}	
-    
+	}   
 }
 // -------------------------------------------------------------------
 // Función enviar JSON por Websocket 
 // -------------------------------------------------------------------
-void WsMessage(String icon, String texto ){
-  if(texto != ""){
-    String response;
-    StaticJsonDocument<300> doc;
-	doc["type"] = "info";
-    doc["icon"] = icon;
-    doc["texto"] = texto;
-    serializeJson(doc, response);
-	// Enviar por WS
-    ws.textAll(response);
-  }else{
-    ws.textAll(icon);
-  }
+void WsMessage(String msg, String icon, String Type){
+  	if(strcmp(Type.c_str(), "info") == 0){
+		String response;
+		StaticJsonDocument<300> doc;
+		doc["type"] = Type;
+		doc["msg"] = msg;
+		doc["icon"] = icon;
+		serializeJson(doc, response);
+		ws.textAll(response);
+	}else{
+		ws.textAll(msg);
+	}
 }
 // -------------------------------------------------------------------
 // Empaquetar el JSON para enviar por WS
@@ -149,14 +149,13 @@ String GetJson(){
 	String response;
 	DynamicJsonDocument jsonDoc(3000);
 	jsonDoc["type"] = "data";
-	jsonDoc["wifi_status"] =  WiFi.status() == WL_CONNECTED ? F("<span class='label label-success'>CONECTADO</span>") : F("<span class='label label-danger'>DESCONECTADO</span>");
+	jsonDoc["wifi_status"] =  WiFi.status() == WL_CONNECTED ? F("CONECTADO") : F("DESCONECTADO");
 	jsonDoc["wifi_dbm"] = WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : 0;
 	jsonDoc["wifi_percent"] = WiFi.status() == WL_CONNECTED ? getRSSIasQuality(WiFi.RSSI()) : 0; 
 	jsonDoc["temp_cpu"] = String(round(TempCPUValue()),2);  
 	jsonDoc["ram_available"] = ESP.getFreeHeap() * 100 / ESP.getHeapSize(); 
 	jsonDoc["spiffs_used"] = SPIFFS.usedBytes() * 100 / SPIFFS.totalBytes();
-	jsonDoc["mqtt_status"] = mqttclient.connected() ? F("<span class='label label-success'>CONECTADO</span>") : F("<span class='label label-danger'>DESCONECTADO</span>");
-	jsonDoc["mqtt_on"] = mqttclient.connected() ? F("<span class='label btn-metis-2'>Online</span>") : F("<span class='label label-danger'>Offline</span>");
+	jsonDoc["mqtt_status"] = mqttclient.connected() ? F("CONECTADO") : F("DESCONECTADO");
 	jsonDoc["mqtt_server"] = mqttclient.connected() ? F(mqtt_server) : F("server not connected");
 	jsonDoc["active"] = longTimeStr(millis() / 1000);
 	jsonDoc["relay1_status"] = Relay01_status ? true : false;

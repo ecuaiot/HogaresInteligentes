@@ -1,14 +1,18 @@
 /* -------------------------------------------------------------------
- * AdminESP - ElectronicIOT 2021
+ * AdminESP - ElectronicIOT 2022
  * Sitio WEB: https://electroniciot.com
  * Correo: admim@electroniciot.com
- * Plataforma ESP32
- * Proyecto Admin Panel Tool para el ESP32
+ * Cel_WSP: +591 71243395
+ * Plataforma: ESP32
+ * Framework:  Arduino
+ * Proyecto Admin Panel Tool para el ESP32 con HTNL, JavaScript, CSS
+ * Hogares Inteligentes v2.0
  * -------------------------------------------------------------------
 */
 
 #include "LedBlink.hpp"
 
+void WsMessage(String msg, String icon, String Type);
 // -------------------------------------------------------------------
 // Sensor Temp Interno CPU
 // -------------------------------------------------------------------
@@ -34,7 +38,7 @@ void log(String s){
 String platform(){
 // Optiene la plataforma de hardware
 #ifdef ARDUINO_ESP32_DEV
-    return "ESP32";
+    return "Dep401";
 #endif
 }
 // -------------------------------------------------------------------
@@ -226,16 +230,14 @@ String SweetAlert(String TitleWeb, String SweetTitle, String SweetText, String S
                         "<html><meta charset='UTF-8'>"
                         "<title>AdminTools | "+ TitleWeb +"</title>"
                         "<meta content='width=device-width, initial-scale=1.0' name='viewport' />"
-                        "<link rel='icon' href='www/esp32.png' type='image/x-icon'>"
-                        "<link rel='stylesheet' href='www/bootstrap.css' />"
-                        "<link rel='stylesheet' href='www/main.css' />"
-                        "<link rel='stylesheet' href='www/MoneAdmin.css' />"
-                        "<link rel='stylesheet' href='www/font-awesome.css' />"
-                        "<link rel='stylesheet' href='www/sweetalert2.min.css' />"
-                        "<script src='www/jquery-2.0.3.min.js'></script>"
-                        "<script src='www/bootstrap.min.js'></script>"
-                        "<script src='www/modernizr-2.6.2.min.js'></script>"
-                        "<script src='www/sweetalert2.min.js'></script>"
+                        "<link rel='icon' href='img/esp32.png' type='image/png'>"
+                        "<link rel='stylesheet' href='css/bootstrap.css'>"
+                        "<link rel='stylesheet' href='css/font-aws.css'>"
+                        "<link rel='stylesheet' href='css/vivify.css'>"
+                        "<link rel='stylesheet' href='css/sweetalert.css'>"
+                        "<script src='js/libscripts.js'></script>"
+                        "<script src='js/vendorscripts.js'></script>"
+                        "<script src='js/sweetalert.js'></script>"
                     "</head>"
                     "<body>"
                     "<script>"
@@ -244,7 +246,7 @@ String SweetAlert(String TitleWeb, String SweetTitle, String SweetText, String S
                                         " icon: '"+SweetIcon+"',"
                                         " confirmButtonText: 'Cerrar'}).then((result) => {"
                                         "if (result.isConfirmed){"
-                                            "history.back();"
+                                            "history.go(-1);"
                                         "};"
                                     "})"
                     "</script>"
@@ -255,16 +257,14 @@ String SweetAlert(String TitleWeb, String SweetTitle, String SweetText, String S
                         "<html><meta charset='UTF-8'>"
                         "<title>AdminTools | "+ TitleWeb +"</title>"
                         "<meta content='width=device-width, initial-scale=1.0' name='viewport' />"
-                        "<link rel='icon' href='www/esp32.png' type='image/x-icon'>"
-                        "<link rel='stylesheet' href='www/bootstrap.css' />"
-                        "<link rel='stylesheet' href='www/main.css' />"
-                        "<link rel='stylesheet' href='www/MoneAdmin.css' />"
-                        "<link rel='stylesheet' href='www/font-awesome.css' />"
-                        "<link rel='stylesheet' href='www/sweetalert2.min.css' />"
-                        "<script src='www/jquery-2.0.3.min.js'></script>"
-                        "<script src='www/bootstrap.min.js'></script>"
-                        "<script src='www/modernizr-2.6.2.min.js'></script>"
-                        "<script src='www/sweetalert2.min.js'></script>"
+                        "<link rel='icon' href='img/esp32.png' type='image/png'>"
+                        "<link rel='stylesheet' href='css/bootstrap.css'>"
+                        "<link rel='stylesheet' href='css/font-aws.css'>"
+                        "<link rel='stylesheet' href='css/vivify.css'>"
+                        "<link rel='stylesheet' href='css/sweetalert.css'>"
+                        "<script src='js/libscripts.js'></script>"
+                        "<script src='js/vendorscripts.js'></script>"
+                        "<script src='js/sweetalert.js'></script>"
                     "</head>"
                     "<body>"
                     "<script>"
@@ -272,8 +272,8 @@ String SweetAlert(String TitleWeb, String SweetTitle, String SweetText, String S
                         " text: '"+SweetText+"',"
                         " icon: '"+SweetIcon+"',"
                         " showCancelButton: true,"
-                        " confirmButtonColor: '#3085d6',"
-                        " cancelButtonColor: '#d33',"
+                        " confirmButtonColor: 'rgb(65, 184, 130)',"
+                        " cancelButtonColor: 'rgb(255, 118, 116)',"
                         " confirmButtonText: 'Si, reiniciar',"
                         " cancelButtonText: 'Cancelar',"
                         " reverseButtons: true"
@@ -283,7 +283,7 @@ String SweetAlert(String TitleWeb, String SweetTitle, String SweetText, String S
                                         "}else if ("
                                         "result.dismiss === Swal.DismissReason.cancel"
                                         "){"
-                                        "history.back();"
+                                        "history.go(-1);"
                                         "}"
                                     "})"
                     "</script>"
@@ -294,16 +294,14 @@ String SweetAlert(String TitleWeb, String SweetTitle, String SweetText, String S
                         "<html><meta charset='UTF-8'>"
                         "<title>AdminTools | "+ TitleWeb +"</title>"
                         "<meta content='width=device-width, initial-scale=1.0' name='viewport' />"
-                        "<link rel='icon' href='www/esp32.png' type='image/x-icon'>"
-                        "<link rel='stylesheet' href='www/bootstrap.css' />"
-                        "<link rel='stylesheet' href='www/main.css' />"
-                        "<link rel='stylesheet' href='www/MoneAdmin.css' />"
-                        "<link rel='stylesheet' href='www/font-awesome.css' />"
-                        "<link rel='stylesheet' href='www/sweetalert2.min.css' />"
-                        "<script src='www/jquery-2.0.3.min.js'></script>"
-                        "<script src='www/bootstrap.min.js'></script>"
-                        "<script src='www/modernizr-2.6.2.min.js'></script>"
-                        "<script src='www/sweetalert2.min.js'></script>"
+                        "<link rel='icon' href='img/esp32.png' type='image/png'>"
+                        "<link rel='stylesheet' href='css/bootstrap.css'>"
+                        "<link rel='stylesheet' href='css/font-aws.css'>"
+                        "<link rel='stylesheet' href='css/vivify.css'>"
+                        "<link rel='stylesheet' href='css/sweetalert.css'>"
+                        "<script src='js/libscripts.js'></script>"
+                        "<script src='js/vendorscripts.js'></script>"
+                        "<script src='js/sweetalert.js'></script>"
                     "</head>"
                     "<body>"
                     "<script>"
@@ -373,4 +371,96 @@ String EncryptionType(int encryptionType) {
     default:
       return "UNKOWN";
     }
+}
+
+// -------------------------------------------------------------------
+// Empaquetar el JSON para enviar por WS ( progress en % y Actividad MQTT )
+// -------------------------------------------------------------------
+String getSendJson(String msg, String type){
+    String response = "";
+    StaticJsonDocument<300> doc;
+    doc["type"] = type;
+    doc["msg"] = msg;
+    serializeJson(doc, response);
+    return response;
+}
+// -------------------------------------------------------------------
+// Print Progress Firmware or SPIFFS Update
+// -------------------------------------------------------------------
+int c = 0;
+void printProgress(size_t prog, size_t sz){
+    int progress = (prog * 100) / content_len; 
+    switch (progress){
+        case 10:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 20:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 30:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 40:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 50:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 60:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 70:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 80:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 90:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(progress), "update"), "", "");
+            }
+            break;
+        case 98:
+            c ++;
+            if(c>=2) c=1;
+            if(c==1){
+                WsMessage(getSendJson(String(100), "update"), "", "");
+            }
+            break;        
+        } 
+    Serial.printf("Info: Progreso de la Actualización al : %d%%\n", progress);
 }

@@ -1,0 +1,54 @@
+/* -------------------------------------------------------------------
+ * AdminESP - ElectronicIOT 2022
+ * Sitio WEB: https://electroniciot.com
+ * Correo: admim@electroniciot.com
+ * Cel_WSP: +591 71243395
+ * Plataforma: ESP32
+ * Framework:  Arduino
+ * Proyecto Admin Panel Tool para el ESP32 con HTNL, JavaScript, CSS
+ * Hogares Inteligentes v2.0
+ * -------------------------------------------------------------------
+*/
+
+.formulario_input-error {
+    font-size: 12px;
+    margin-bottom: 0;
+    display: none;
+}
+
+.formulario_input-error-activo {
+    display: block;
+    color: #dc3545;
+}
+
+.formulario_mensaje {
+    display: none;
+}
+
+.formulario_mensaje-activo {
+    display: block;
+}
+
+.scan {
+    display: none;
+}
+
+.scan-activo {
+    display: block;
+}
+
+.table-off {
+    display: none;
+}
+
+.table-activo {
+    display: block;
+}
+
+.fw {
+    display: none;
+}
+
+.fw-activo {
+    display: block;
+}
