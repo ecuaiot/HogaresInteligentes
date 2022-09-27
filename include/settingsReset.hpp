@@ -45,7 +45,7 @@ void settingsResetMQTT(){
     strlcpy(mqtt_id, device_id.c_str(), sizeof(mqtt_id));
     mqtt_time = 60000;  // Un Minuto
     mqtt_port = 1883;
-    mqtt_enable = false;
+    mqtt_enable = true;
 }
 // -------------------------------------------------------------------
 // Valores por defecto Relays

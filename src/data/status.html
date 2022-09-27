@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<!-- * -------------------------------------------------------------------- -->
+<!-- * AdminESP - ElectronicIOT 2022                                        -->
+<!-- * Sitio WEB: https://electroniciot.com                                 -->
+<!-- * Correo: admin@electroniciot.com                                      -->
+<!-- * Cel_WSP: +591 71243395                                               -->
+<!-- * Plataforma: ESP32                                                    -->
+<!-- * Framework:  Arduino                                                  -->
+<!-- * Proyecto: Panel Administrativo para el ESP32 con HTML 5              -->
+<!-- * Nombre: Hogares Inteligentes                                             -->
+<!-- * Autor: Ing. Yamir Hidalgo Peña                                       -->
+<!-- * -------------------------------------------------------------------  -->
+
+<head>
+    <title>Status | Hogares Inteligentes</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="description" content="Panel Administrativo para el ESP32">
+    <meta name="author" content="ELECTRONICIOT.COM">
+    <link rel="icon" href="img/esp32.png" type="image/png">
+    <!-- VENDOR CSS -->
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-aws.css">
+    <link rel="stylesheet" href="css/vivify.css">
+    <link rel="stylesheet" href="css/sweetalert.css" />
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="css/mooli.css">
+</head>
+
+<body data-theme="light">
+    <div id="body" class="theme-green">
+        <!-- Overlay For Sidebars -->
+        <div class="overlay"></div>
+        <div id="wrapper">
+            <!-- Page top navbar -->
+            <nav class="navbar navbar-fixed-top">
+                <div class="container-fluid">
+                    <h5>Hogares Inteligentes</h5>
+                    <div class="navbar-left">
+                        <div class="navbar-btn">
+                            <a href="/"><img src="img/esp32.png" alt="Mooli Logo" class="img-fluid logo"></a>
+                            <button type="button" class="btn-toggle-offcanvas"><i class="fa fa-align-left"></i></button>
+                        </div>
+                    </div>
+                    <div class="navbar-right">
+                        <div id="navbar-menu">
+                            <ul class="nav navbar-nav">
+                                <!-- Claro / Oscuro -->
+                                <li class="mt-2">
+                                    <label class="switch dark_mode">
+                                        <input type="checkbox">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </li>
+                                <li class="hidden-xs"><a href="javascript:void(0);" id="btnFullscreen" class="icon-menu"><i class="fa fa-arrows-alt"></i></a></li>
+                                <li><a href="esp-logout" class="icon-menu"><i class="fa fa-power-off"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <!-- Main left sidebar menu -->
+            <div id="left-sidebar" class="sidebar">
+                <a href="#" class="menu_toggle"><i class="fa fa-angle-left"></i></a>
+                <!-- Logo -->
+                <div class="navbar-brand">
+                    <a href="/"><img src="img/esp32.png" alt="Hogares Inteligentes Logo" class="img-fluid logo"><span>#platform#</span></a>
+                    <button type="button" class="btn-toggle-offcanvas btn btn-sm float-right"><i class="lnr lnr-menu fa fa-chevron-circle-left"></i></button>
+                </div>
+                <!-- sidebar -->
+                <div class="sidebar-scroll">
+                    <!-- user -->
+                    <div class="user-account">
+                        <!-- <div class="user_div"> -->
+                        <!--     <img src="img/user.png" class="user-photo" alt="User Profile Picture"> -->
+                        <!-- </div> -->
+                        <div class="dropdown">
+                            <span>Administrador,</span>
+                            <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>Usuario</strong></a>
+                            <ul class="dropdown-menu dropdown-menu-right account vivify flipInY">
+                                <li><a href="esp-admin"><i class="fa fa-user"></i>Perfil</a></li>
+                                <li class="divider"></li>
+                                <li><a href="esp-logout"><i class="fa fa-power-off"></i>Salir</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- user end -->
+                    <!-- menu -->
+                    <nav id="left-sidebar-nav" class="sidebar-nav">
+                        <ul id="main-menu" class="metismenu animation-li-delay">
+                            <li class="header">Inicio</li>
+                            <li><a href="/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+                            <li class="header">Conectividad</li>
+                            <li class="active"><a href="esp-status"><i class="fa fa-chain"></i> <span>Status</span></a></li>
+                            <li><a href="esp-wifi"><i class="fa fa-wifi"></i> <span>WiFi</span></a></li>
+                            <li><a href="esp-mqtt"><i class="fa fa-tasks"></i> <span>MQTT</span></a></li>
+                            <li class="header">Configuraciones</li>
+                            <li>
+                                <a href="#uiElements" class="has-arrow"><i class="fa fa-cog"></i><span>Administrar</span></a>
+                                <ul>
+                                    <li><a href="esp-device">Dispositivo</a></li>
+                                    <li><a href="esp-admin">Contraseña</a></li>
+                                    <li><a href="esp-restore">Restablecer</a></li>
+                                    <li><a href="esp-restart">Reiniciar</a></li>
+                                </ul>
+                            </li>
+                            <li class="header">sesión</li>
+                            <li><a href="esp-logout"><i class="fa fa-power-off"></i> <span>Salir</span></a></li>
+                        </ul>
+                    </nav>
+                    <!-- menu end -->
+                </div>
+            </div>
+            <!-- Main body part  -->
+            <div id="main-content">
+                <div class="container-fluid">
+                    <!-- Page header section  -->
+                    <div class="block-header">
+                        <div class="row clearfix">
+                            <div class="col-xl-5 col-md-5 col-sm-12">
+                                <h1>Estado del Dispositivo</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- serial - device - reinicios - time active -->
+                    <div class="row clearfix">
+                        <!-- serial -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 px-4">
+                                <div>Serial</div>
+                                <div class="py-1 m-0 text-center h4 text-info">#serie#</div>
+                            </div>
+                        </div>
+                        <!-- serial end -->
+                        <!-- device -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 px-4">
+                                <div>Dispositivo</div>
+                                <div class="py-1 m-0 text-center h4 text-success">#platform#</div>
+                            </div>
+                        </div>
+                        <!-- device end -->
+                        <!-- reinicios -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 px-4">
+                                <div>Reinicios</div>
+                                <div class="py-1 m-0 text-center h4 text-warning">#bootCount#</div>
+                            </div>
+                        </div>
+                        <!-- device -->
+                        <!-- time active -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 px-4">
+                                <div>Tiempo Activo</div>
+                                <div class="py-1 m-0 text-center h4 text-danger" id="active">#time_active#</div>
+                            </div>
+                        </div>
+                        <!-- time active -->
+                    </div>
+                    <!-- wifi - mqtt - rssi - señal -->
+                    <div class="row clearfix">
+                        <!-- wifi status -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <div class="card-body top_counter">
+                                    <div class="icon bg-warning text-white"><i class="fa fa-wifi"></i> </div>
+                                    <div class="content">
+                                        <span>WIFI</span>
+                                        <h5 class="number mb-0">
+                                            <p class="text-danger" id="wifi_on">Offline</p>
+                                        </h5>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="progress progress-xxs">
+                                            <div class="progress-bar bg-danger" style="width: 100%" id="progress_wifi_on"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- wifi status end -->
+                        <!-- mqtt status -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <div class="card-body top_counter">
+                                    <div class="icon bg-primary text-white"><i class="fa fa-tasks"></i> </div>
+                                    <div class="content">
+                                        <span>MQTT</span>
+                                        <h5 class="number mb-0">
+                                            <p class="text-danger" id="mqtt_on">Offline</p>
+                                        </h5>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="progress progress-xxs">
+                                            <div class="progress-bar bg-danger" style="width: 100%" id="progress_mqtt_on"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- mqtt status end -->
+                        <!-- rssi -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <div class="card-body top_counter">
+                                    <div class="icon bg-success text-white"><i class="fa fa-signal"></i> </div>
+                                    <div class="content">
+                                        <span>WIFI RSSI</span>
+                                        <h5 class="number mb-0">
+                                            <p class="text-success" id="wifi_dbm">#wifi_dbm# dBm</p>
+                                        </h5>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="progress progress-xxs">
+                                            <div class="progress-bar bg-info" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- rssi end -->
+                        <!-- señal % -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card">
+                                <div class="body">
+                                    <div class="card-value float-right text-warning"><span id="wifi_percent">#wifi_percent# %</span></div>
+                                    <div>Calidad de Señal WiFi:</div>
+                                    <div class="mt-4">
+                                        <div id="progress-format1" class="progress">
+                                            <div class="progress-bar progress-bar-warning" id="wifi_Signal" style="width: #wifi_percent#%;"><span id="wifi_label">#wifi_percent# %</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- señal % end -->
+                    </div>
+                    <!-- Info WIFI - mqtt - relays -->
+                    <div class="row clearfix">
+                        <!-- Info WIFI -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Inalámbrico</h2>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-striped mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>Estado WiFi:</td>
+                                                <td class="text-right"><span class="badge badge-danger" id="wifi_status">#wifi_status#</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>SSID WiFi:</td>
+                                                <td class="text-right">#wifi_ssid#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>IPv4 WiFi:</td>
+                                                <td class="text-right">#wifi_ip#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MAC WiFi:</td>
+                                                <td class="text-right">#wifi_mac#</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Info WIFI end -->
+                        <!-- Info MQTT -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Broker MQTT</h2>
+                                </div>
+                                <div class="body">
+                                    <table class="table table-striped mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>Estado MQTT:</td>
+                                                <td class="text-right"><span class="badge badge-danger" id="mqtt_status">#mqtt_status#</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Servidor MQTT:</td>
+                                                <td class="text-right" id="mqtt_server">#mqtt_server#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Usuario MQTT:</td>
+                                                <td class="text-right">#mqtt_user#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Cliente ID MQTT:</td>
+                                                <td class="text-right">#mqtt_id#</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Info MQTT end -->
+                        <!-- Relays -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Control de Relays</h2>
+                                </div>
+                                <div class="body">
+                                    <div class="row text-center">
+                                        <div class="col-md-12 pb-2">
+                                            <li class="list-group-item d-flex align-items-center justify-content-between">
+                                                <span for="RELAY1" class="badge badge-warning">Relay 01</span>
+                                                <label class="switch gradient_mode">
+                                                    <input type="checkbox" #relay1# id="RELAY1" onchange="relay(this);">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                                <div class="card-value float-right #label1#" id="RELAY1_Status"><i class="fa fa-lightbulb-o"></i></div>
+                                            </li>
+                                        </div>
+                                        <div class="col-md-12 pb-3">
+                                            <li class="list-group-item d-flex align-items-center justify-content-between">
+                                                <span for="RELAY2" class="badge badge-warning">Relay 02</span>
+                                                <label class="switch gradient_mode">
+                                                    <input type="checkbox" #relay2# id="RELAY2" onchange="relay(this);">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                                <div class="card-value float-right #label2#" id="RELAY2_Status"><i class="fa fa-lightbulb-o"></i></div>
+                                            </li>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Relays end -->
+                    </div>
+                    <!-- información general - SPIFFS - RAM -->
+                    <div class="row clearfix">
+                        <!-- información general -->
+                        <div class="col-lg-8 col-md-12">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Información General</h2>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-responsive table-striped mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>Identificación:</td>
+                                                <td class="text-left">#id#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Número de Serie:</td>
+                                                <td class="text-left">#serie#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>mDNS Url:</td>
+                                                <td class="text-left"> <a href="http://#id#.local/" target="_blank">http://#id#.local/</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Dirección IP del Cliente:</td>
+                                                <td class="text-left">#clientIP#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Navegador del Cliente:</td>
+                                                <td class="text-left">#userAgent#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Versión del Firmware:</td>
+                                                <td class="text-left">#firmware#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>SDK:</td>
+                                                <td class="text-left">#sdk#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Versión del Hardware :</td>
+                                                <td class="text-left">#hardware#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>CPU FREQ:</td>
+                                                <td class="text-left">#cpu_freq# MHz</td>
+                                            </tr>
+                                            <tr>
+                                                <td>RAM SIZE:</td>
+                                                <td class="text-left">#ram_size# KB</td>
+                                            </tr>
+                                            <tr>
+                                                <td>FLASH SIZE:</td>
+                                                <td class="text-left">#flash_size# MB</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Fabricante:</td>
+                                                <td class="text-left">#manufacture#</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tiempo de Actividad del Sistema:</td>
+                                                <td class="text-left"><span class="badge badge-danger" id="time_active">#time_active#</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Cantidad de Reinicios:</td>
+                                                <td class="text-left"><span class="badge badge-warning">#bootCount#</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- información general end -->
+                        <!-- progress SPIFF - RAM -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card">
+                                <div class="body">
+                                    <div class="card">
+                                        <div class="body">
+                                            <div class="card-value float-right text-primary"><span id="spiffs_label">#spiffs_used#% %</span></div>
+                                            <div>SPIFFS Usada:</div>
+                                            <div class="mt-4">
+                                                <div id="progress-format1" class="progress">
+                                                    <div class="progress-bar progress-bar-primary" id="spiffs_Signal" style="width: #spiffs_used#%;"><span id="spiffs_info">#spiffs_used# %</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="body">
+                                            <div class="card-value float-right text-success"><span id="ram_label">#ram_available# %</span></div>
+                                            <div>RAM Disponible:</div>
+                                            <div class="mt-4">
+                                                <div id="progress-format1" class="progress">
+                                                    <div class="progress-bar progress-bar-success" id="ram_Signal" style="width: #ram_available#%;"><span id="ram_info">#ram_available# %</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-value float-right text-warning"><i class="fa fa-thermometer-three-quarters"></i></div>
+                                            <h3 class="mb-1 h1" id="temp_cpu">#temp_cpu# °C</h3>
+                                            <div>Temperatura del CPU</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- progress SPIFF - RAM end -->
+                    </div>
+                </div>
+            </div>
+            <!-- Main body end  -->
+            <form id="form"></form>
+        </div>
+    </div>
+    <!-- Javascript -->
+    <script src="js/libscripts.js"></script>
+    <script src="js/vendorscripts.js"></script>
+    <!-- Vedor js file and create bundle with grunt  -->
+    <script src="js/sweetalert.js"></script>
+    <!-- Project core js file minify with grunt -->
+    <script src="js/mainscripts.js "></script>
+    <!-- Custom Scripts -->
+    <script src="js/scripts.js "></script>
+</body>
+
+</html>

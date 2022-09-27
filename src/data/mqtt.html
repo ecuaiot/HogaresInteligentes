@@ -95,6 +95,7 @@
                             <li class="header">Inicio</li>
                             <li><a href="/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
                             <li class="header">Conectividad</li>
+                            <li><a href="esp-status"><i class="fa fa-chain"></i> <span>Status</span></a></li>
                             <li><a href="esp-wifi"><i class="fa fa-wifi"></i> <span>WiFi</span></a></li>
                             <li class="active"><a href="esp-mqtt"><i class="fa fa-tasks"></i> <span>MQTT</span></a></li>
                             <li class="header">Configuraciones</li>
@@ -189,6 +190,77 @@
                             </div>
                         </div>
                         <!-- Conectividad end -->
+                    </div>
+
+                    <!-- Page header section  -->
+                    <div class="block-header">
+                        <div class="row clearfix">
+                            <div class="col-xl-5 col-md-5 col-sm-12">
+                                <h1 id="page">Configuración del Medidor de Energía</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Conectividad -->
+                    <div class="col-lg-12 col-md-12">
+                        <div class="card p-3 px-4">
+                            <div class="card">
+                                <div class="header">
+                                    <h2><span class="badge badge-primary">Calibration Settings</span></h2>
+                                </div>
+                                <div class="body mt-3">
+                                    <div class="itembody-wrapper">
+                                        <span>Values for voltage and current calibration. <br>For more information on setting custom values for calibration see the <a href="https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter">Energy Meter Github page.</a> The default values are used unless other values are entered here.</span><br><br>
+                                        <p>
+                                            <b>Voltage:</b><br>
+                                            <input type="text" value="voltage_cal" data-bind="textInput: config.voltage_cal"><br>
+                                            <span class="small-text">37106 - 9v AC Transformer - Jameco 157041
+                            <br>38302 - 9v AC Transformer - Jameco 112336
+                            <br>29462 - 12v AC Transformer - Jameco 167151
+                            <br>For meter versions >= 1.4 rev3:
+                            <br>3920 - 9v AC Transformer - Jameco 157041 (default)
+                            </span><br>
+
+                                        </p>
+                                        <p>
+                                            <b>CT1:</b><br>
+                                            <input type="text" data-bind="textInput: config.ct1_cal"><br>
+                                            <span class="small-text">25498 - SCT-013-000 100A/50mA
+                            <br>39473 - SCT-016 120A/40mA (default)
+                            <br>46539 - Magnalab 100A</span><br>
+                                        </p>
+                                        <p>
+                                            <b>CT2:</b><br>
+                                            <input type="text" data-bind="textInput: config.ct2_cal"><br>
+                                            <span class="small-text">25498 - SCT-013-000 100A/50mA
+                            <br>39473 - SCT-016 120A/40mA (default)
+                            <br>46539 - Magnalab 100A</span><br>
+                                        </p>
+                                        <p>
+                                            <b>Frequency:</b><br>
+                                            <input type="text" data-bind="textInput: config.freq_cal"><br>
+                                            <span class="small-text">60 Hz - North America: 4231 (Default)
+                            <br>50 Hz - Europe: 135</span>
+                                        </p>
+                                        <p>
+                                            <b>CT Gain (PGA):</b><br>
+                                            <input type="text" data-bind="textInput: config.gain_cal"><br>
+                                            <span class="small-text"> 1x: 0
+                            <br>2x: 21 (default)
+                            <br>4x: 42</span>
+                                            <br><br>
+                                            <button id="save_cal" type="submit" class="btn btn-success mb-2"><i class="fa fa-floppy-o"></i> <span> Guardar</span></button>
+                                            <span>After saving, the ESP will be restarted and values sent to the energy meter</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Debug Terminal -->
+                            <h3>Serial Consoles</h3>
+                            <div>
+                                <button onclick="window.open('term.html?debug');" class="btn btn-success mb-2"><i class="fa fa-bug"></i> <span> Debug</span></button>
+                                <button onclick="window.open('term.html?debug');">Debug</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -14,7 +14,7 @@
 // Definiciones
 // -------------------------------------------------------------------
 #define RELAY1  27                  // GPIO27 para salida de Relay 1
-#define RELAY2  26                  // GPIO26 para salida de Relay 2
+#define RELAY2  2                  // GPIO26 para salida de Relay 2
 #define WIFILED 12                  // GPIO12 LED INDICADOR WIFI 
 #define MQTTLED 13                  // GPIO13 LED INDICADOR MQTT
 // -------------------------------------------------------------------

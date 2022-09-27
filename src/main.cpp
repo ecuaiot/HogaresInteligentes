@@ -31,11 +31,17 @@
 #include "esp32_websocket.hpp"
 #include "esp32_server.hpp"
 #include "esp32_pinRestore.hpp"
+#include "ntp.hpp"
 
 // -------------------------------------------------------------------
 // Setup
 // -------------------------------------------------------------------
 void setup() {
+    //debug_setup();
+    //DEBUG.println();
+    //DEBUG.println();
+    //DEBUG.print("EmonESP ");
+
     // Baudrate
     Serial.begin(115200);
     // CPU Freq
@@ -90,6 +96,10 @@ void setup() {
     setupPinRestore();
     log("Info: Setup completado");   
 
+    //iniccializacion de NTP
+    timeClient.begin();
+    printf("After timeClient.begin: %d", ESP.getFreeHeap());
+
 }
 
 
@@ -127,9 +137,19 @@ void loop() {
     if (millis() - lastWsSend > 1000){
         lastWsSend = millis();
         WsMessage(GetJson(), "", "");
+            //timeClient.setTimeOffset(time_offset);
+            //log("time: " + getDateTime());
     }
     // -------------------------------------------------------------------
     // Monitorear la Interrupción del Pin 33
     // -------------------------------------------------------------------
     restoreIntLoop();
+
+    //Inicializacion de NTP
+    timeClient.update();
+    //int timenow = timeClient.getHours()*100+timeClient.getMinutes();
+    
+
+
+    
 }

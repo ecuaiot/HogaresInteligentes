@@ -9,8 +9,14 @@
  * Hogares Inteligentes v2.0
  * -------------------------------------------------------------------
 */
+//#if defined(ENABLE_DEBUG) && !defined(ENABLE_DEBUG_WEB)
+//#undef ENABLE_DEBUG
+//#endif
 
 #include <Update.h>
+//#include "debug.h"
+//#include <NTPClient.h>
+
 // -------------------------------------------------------------------
 // CORS
 // -------------------------------------------------------------------
@@ -89,6 +95,67 @@ void handleHome(AsyncWebServerRequest *request) {
         request->send(200, "text/html", s);    
     }else{
         request->send(500, "text/plain","/index.html not found, have you flashed the SPIFFS?");
+    }
+
+}
+
+void handleStatus(AsyncWebServerRequest *request) {
+    AsyncResponseStream *response;
+    if(false == requestPreProcess(request, response)) {
+        return;
+    }      
+    File file = SPIFFS.open(F("/status.html"), "r");
+    if (file){
+        file.setTimeout(100);
+        String s = file.readString();
+        file.close();
+        // -------------------------------------------------------------------
+        // Actualiza el contenido del html al cargar
+        // -------------------------------------------------------------------
+        s.replace(F("#id#"), id);
+        s.replace(F("#serie#"), device_id);
+        /* Bloque Inalámbrico */
+        s.replace(F("#wifi_status#"), WiFi.status() == WL_CONNECTED ? F("<span class='label label-success'>CONECTADO</span>") : F("<span class='label label-danger'>DESCONECTADO</span>"));
+        s.replace(F("#wifi_ssid#"), WiFi.status() == WL_CONNECTED ? F(wifi_ssid) : F("WiFi not connected"));
+        s.replace(F("#wifi_ip#"), ipStr(WiFi.status() == WL_CONNECTED ? WiFi.localIP() : WiFi.softAPIP()));
+        s.replace(F("#wifi_mac#"), String(WiFi.macAddress()));
+        s.replace(F("#wifi_dbm#"), WiFi.status() == WL_CONNECTED ? String(WiFi.RSSI()) : F("0"));
+        s.replace(F("#wifi_percent#"), WiFi.status() == WL_CONNECTED ? String(getRSSIasQuality(WiFi.RSSI())) : F("0"));
+        /* Bloque MQTT */
+        s.replace(F("#mqtt_status#"), mqttclient.connected() ? F("<span class='label label-success'>CONECTADO</span>") : F("<span class='label label-danger'>DESCONECTADO</span>"));
+        s.replace(F("#mqtt_server#"), mqttclient.connected() ? F(mqtt_server) : F("server not connected"));
+        s.replace(F("#mqtt_user#"), F(mqtt_user));
+        s.replace(F("#mqtt_id#"), F(mqtt_id));
+        /* Bloque Información */
+        s.replace(F("#clientIP#"), ipStr(request->client()->remoteIP()));
+        s.replace(F("#userAgent#"), request->getHeader("User-Agent")->value().c_str());
+        s.replace(F("#firmware#"), currentfirmware);
+        s.replace(F("#sdk#"), String(ESP.getSdkVersion()));
+        s.replace(F("#hardware#"), F(HW));
+        s.replace(F("#manufacture#"), F(MF));
+        s.replace(F("#cpu_freq#"), String(getCpuFrequencyMhz()));
+        s.replace(F("#flash_size#"), String(ESP.getFlashChipSize() / (1024.0 * 1024), 2));
+        s.replace(F("#ram_size#"), String(ESP.getHeapSize() / 1024.0, 2));
+        s.replace(F("#time_active#"), longTimeStr(millis() / 1000));
+        s.replace(F("#bootCount#"), String(bootCount));
+        /* Bloque General */
+        s.replace(F("#platform#"), platform());
+        s.replace(F("#mqtt_on#"), mqttclient.connected() ? F("<span class='label btn-metis-2'>Online</span>") : F("<span class='label label-danger'>Offline</span>"));
+        s.replace(F("#temp_cpu#"), String(TempCPUValue()));
+        /* Bloque Progressbar */
+        s.replace(F("#spiffs_used#"), String(round(SPIFFS.usedBytes() * 100 / SPIFFS.totalBytes()), 0));
+        s.replace(F("#ram_available#"), String(ESP.getFreeHeap() * 100 / ESP.getHeapSize()));
+        /* Botones Relays */
+        s.replace(F("#relay1#"), Relay01_status ? "checked" : "");
+        s.replace(F("#relay2#"), Relay02_status ? "checked" : "");
+        s.replace(F("#label1#"), Relay01_status ? "label-primary" : "label-info");
+        s.replace(F("#label2#"), Relay02_status ? "label-primary" : "label-info");
+        s.replace(F("#Statustext1#"), Relay01_status ? "Activo" : "Apagado");
+        s.replace(F("#Statustext2#"), Relay02_status ? "Activo" : "Apagado");
+        // Send Data
+        request->send(200, "text/html", s);    
+    }else{
+        request->send(500, "text/plain","/status.html not found, have you flashed the SPIFFS?");
     }
 
 }
@@ -200,6 +267,12 @@ void InitServer(){
     // Metodo: GET
     // -------------------------------------------------------------------
     server.on("/",HTTP_GET,handleHome);
+        // -------------------------------------------------------------------
+    // Cargar página status.html
+    // url: /esp-status
+    // Metodo: GET
+    // -------------------------------------------------------------------
+    server.on("/esp-status", HTTP_GET, handleStatus);
     // -------------------------------------------------------------------
     // Cargar página wifi.html
     // url: /esp-wifi
